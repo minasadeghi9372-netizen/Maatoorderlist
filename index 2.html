@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تولیدی و پخش ماتو - سیستم ثبت سفارش</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #75c9c8;
+            --primary-dark: #58a9a8;
+            --primary-light: #e8f5f5;
+            --accent: #ffd166;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --bg-body: #f8fbgb;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(117, 201, 200, 0.15);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        body {
+            background-color: #f4fbfb;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--white);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: var(--primary-light);
+            padding: 5px;
+        }
+
+        .brand-info h1 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        .brand-info span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .cart-btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(117, 201, 200, 0.4);
+        }
+
+        .cart-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .cart-badge {
+            background: var(--white);
+            color: var(--primary-dark);
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .products-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            background: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .search-filter input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-filter input:focus {
+            border-color: var(--primary);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(117, 201, 200, 0.2);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(117, 201, 200, 0.25);
+        }
+
+        .product-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--text-main);
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 1.05rem;
+        }
+
+        .add-to-cart {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .cart-sidebar {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            border: 1px solid rgba(117, 201, 200, 0.2);
+        }
+
+        .cart-sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .cart-items {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background: var(--primary-light);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-item-controls button {
+            background: var(--white);
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .customer-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .customer-form input {
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .customer-form input:focus {
+            border-color: var(--primary);
+        }
+
+        .cart-summary {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+
+        .checkout-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .checkout-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-btn { background: #25d366; }
+        .telegram-btn { background: #0088cc; }
+        .checkout-btn:hover { opacity: 0.9; }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: var(--white);
+            border-top: 1px solid #eaeaea;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <!-- لوگوی اختصاصی شما -->
+            <img src="Logo H_bd3fa1.png" alt="لوگو">
+            <div class="brand-info">
+                <h1>تولیدی و پخش ماتو</h1>
+                <span>تاریخ بروزرسانی لیست: ۱۴۰۵/۷/۱۴</span>
+            </div>
+        </div>
+        <button class="cart-btn" onclick="scrollToCart()">
+            <i class="fa-solid fa-shopping-bag"></i>
+            سبد خرید
+            <span class="cart-badge" id="cartCount">0</span>
+        </button>
+    </header>
+
+    <main>
+        <section class="products-section">
+            <div class="search-filter">
+                <input type="text" id="searchInput" placeholder="جستجوی محصول در لیست..." oninput="filterProducts()">
+            </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- محصولات به صورت پویا بارگذاری می‌شوند -->
+            </div>
+        </section>
+
+        <aside class="cart-sidebar" id="cartSection">
+            <h2>سبد خرید شما</h2>
+            <div class="cart-items" id="cartItems">
+                <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 1rem;">سبد خرید خالی است</p>
+            </div>
+
+            <div class="customer-form">
+                <input type="text" id="custName" placeholder="نام و نام خانوادگی مشتری">
+                <input type="tel" id="custPhone" placeholder="شماره تماس">
+                <input type="text" id="custAddress" placeholder="آدرس کامل پستی">
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>مجموع قابل پرداخت:</span>
+                    <span id="totalPrice">۰ تومان</span>
+                </div>
+            </div>
+
+            <div class="checkout-actions">
+                <button class="checkout-btn whatsapp-btn" onclick="sendOrder('whatsapp')">
+                    <i class="fa-brands fa-whatsapp"></i> واتس‌اپ
+                </button>
+                <button class="checkout-btn telegram-btn" onclick="sendOrder('telegram')">
+                    <i class="fa-brands fa-telegram"></i> تلگرام
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <footer>
+        تولیدی و پخش ماتو | تمامی حقوق محفوظ است.
+    </footer>
+
+    <script>
+        const products = [
+            { id: 1, name: "هدبند کبریتی", price: 139000 },
+            { id: 2, name: "هد بند لیونا", price: 139000 },
+            { id: 3, name: "هد بند مینیمال", price: 120000 },
+            { id: 4, name: "دستمال گردن مینیمال", price: 159000 },
+            { id: 5, name: "دستمال گردن موسلین طرح دار جدید", price: 299000 },
+            { id: 6, name: "پیشبند پر چاپ", price: 169000 },
+            { id: 7, name: "پیشبند تک چاپ", price: 169000 },
+            { id: 8, name: "پیشبند+دستمال گردن", price: 359000 },
+            { id: 9, name: "پیشبند دو عددی", price: 359000 },
+            { id: 10, name: "جوراب کبریتی و گوش دار", price: 699000 },
+            { id: 11, name: "جوراب طرح دار", price: 639000 },
+            { id: 12, name: "جوراب لب تا زمستانی", price: 699000 },
+            { id: 13, name: "جوراب شلواری", price: 299000 },
+            { id: 14, name: "پتو دور پیچ کلاه دار", price: 879000 },
+            { id: 15, name: "بالش تدی", price: 339000 },
+            { id: 16, name: "بند پستانک لاکچری جدید", price: 169000 },
+            { id: 17, name: "بند پستانک موسلین جدید", price: 159000 },
+            { id: 18, name: "بند پستانک طرح دار گیره پلاستیکی", price: 159000 },
+            { id: 19, name: "بند پستانک طرح دار گیره فلزی", price: 150000 },
+            { id: 20, name: "دستمال دست صورت جعبه ای جدید", price: 399000 },
+            { id: 21, name: "خشک کن تک", price: 249000 },
+            { id: 22, name: "خشک کن سه عددی چیکو", price: 989000 },
+            { id: 23, name: "زیر انداز تعویض بزرگ", price: 250000 },
+            { id: 24, name: "دستکش نوزادی سفید", price: 69000 },
+            { id: 25, name: "دستکش نوزادی طرح دار", price: 79000 },
+            { id: 26, name: "کلاه خرگوشی", price: 159000 },
+            { id: 27, name: "قنداق چسبی طرح جدید", price: 429000 },
+            { id: 28, name: "کمپرس سرد و گرم", price: 589000 },
+            { id: 29, name: "ست دستکش کلاه جوراب پنبه", price: 399000 }
+        ];
+
+        let cart = [];
+
+        function renderProducts(filteredProducts = products) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            filteredProducts.forEach(product => {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-footer">
+                            <span class="product-price">${product.price ? product.price.toLocaleString() + ' تومان' : 'تماس بگیرید'}</span>
+                            <button class="add-to-cart" onclick="addToCart(${product.id})">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+            renderProducts(filtered);
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existing = cart.find(item => item.id === id);
+            
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
+        }
+
+        function updateQty(id, change) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const totalPriceEl = document.getElementById('totalPrice');
+
+            cartCount.textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 1rem;">سبد خرید خالی است</p>`;
+                totalPriceEl.textContent = '۰ تومان';
+                return;
+            }
+
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                total += item.price * item.qty;
+                cartItemsContainer.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name}</span>
+                        <div class="cart-item-controls">
+                            <button onclick="updateQty(${item.id}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="updateQty(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            totalPriceEl.textContent = total.toLocaleString() + ' تومان';
+        }
+
+        function scrollToCart() {
+            document.getElementById('cartSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function sendOrder(platform) {
+            if (cart.length === 0) {
+                alert('سبد خرید شما خالی است!');
+                return;
+            }
+
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+
+            if (!name || !phone) {
+                alert('لطفاً نام و شماره تماس خود را وارد کنید.');
+                return;
+            }
+
+            let text = `📦 *سفارش جدید مشتری - تولیدی و پخش ماتو*\n\n`;
+            text += `👤 نام: ${name}\n`;
+            text += `📞 تلفن: ${phone}\n`;
+            text += `📍 آدرس: ${address || 'ثبت نشده'}\n\n`;
+            text += `🛒 *اقلام سفارش:* \n`;
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                text += `${index + 1}. ${item.name} (تعداد: ${item.qty}) - ${subtotal.toLocaleString()} تومان\n`;
+            });
+
+            text += `\n💰 *مجموع کل:* ${total.toLocaleString()} تومان`;
+
+            const encoded = encodeURIComponent(text);
+            if (platform === 'whatsapp') {
+                window.open(`https://wa.me/?text=${encoded}`, '_blank');
+            } else {
+                window.open(`https://t.me/share/url?url=&text=${encoded}`, '_blank');
+            }
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
